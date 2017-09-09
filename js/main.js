@@ -23,25 +23,64 @@ var cards = [
 
 var cardsInPlay = [];
 
-var checkForMatch = function() {
+var wins = 0;
+var losses = 0;
+
+var checkForMatch = function(card) {
+	// flip the card
+	card.setAttribute('src', cards[card.getAttribute('data-id')].cardImage);
+
 	if (cardsInPlay.length === 2) {
 		if (cardsInPlay[0] === cardsInPlay[1]) {
 			alert('You found a match!');
+			/*wins++;
+			displayScore();*/
 		} else {
 			alert('Sorry, try again.');
+			/*losses++;
+			displayScore();*/
 		}
 	}
 }
 
-var flipCard = function(cardId) {
-	console.log('User flipped ' + cards[cardId].rank);
+var flipCard = function() {
+	var cardId = this.getAttribute('data-id');
 	cardsInPlay.push(cards[cardId].rank);
 
-	console.log('Img path: ' + cards[cardId].cardImage);
-	console.log('Suit: ' + cards[cardId].suit);
-
-	checkForMatch();
+	checkForMatch(this);
 }
 
-flipCard(0);
-flipCard(2);
+var createBoard = function() {
+	for (var x = 0; x < cards.length; x++) {
+		var cardElement = document.createElement('img');
+		cardElement.setAttribute('src', 'images/back.png');
+		cardElement.setAttribute('data-id', x);
+		cardElement.setAttribute('alt', cards[x].rank + ' of ' + cards[x].suit);
+		cardElement.addEventListener('click', flipCard);
+		document.getElementById('game-board').appendChild(cardElement);
+	}
+	document.getElementById('btn').addEventListener('click', resetGame);
+	//displayScore();
+}
+
+var resetGame = function() {
+	cardsInPlay.length = 0;
+	var gameBoard = document.getElementById('game-board');
+	// destory old board
+	while (gameBoard.hasChildNodes()) {
+		gameBoard.removeChild(gameBoard.lastChild);
+	}
+	createBoard();
+}
+
+/*var displayScore = function() {
+	var scoreBoard = document.getElementById('score');
+	scoreBoard.removeChild(scoreBoard.lastChild);
+	var scoreTable = document.createElement('table');
+	scoreTable.innerHTML = '<tr><th>Wins</th><th>Losses</th></tr><tr><td>' + wins + 
+	'</td><td>' + losses + '</td></tr>';
+	scoreTable.style.alignSelf = 'center';
+	scoreBoard.appendChild(scoreTable);
+}*/
+
+createBoard();
